@@ -20,10 +20,8 @@ env:
   VYOS_VERSION: 1.4-rolling
 
 jobs:
-  release:
+  build-iso:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     container:
       image: vyos/vyos-build:current
       options: --privileged
@@ -35,7 +33,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Setup Tools
-        run: sudo apt install -y make ansible python3
+        run: sudo apt install -y make
 
       - name: Run setup actions
         run: make prepare
@@ -60,6 +58,26 @@ jobs:
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
               --custom-package "tailscale"
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: vyos-iso
+          path: "./vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso"
+          retention-days: 1
+
+  build-qemu:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Setup variables
+        id: vars
+        run: |
+          build_date=$(date +%Y%m%d%H%M)
+          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
+          echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
+
       - name: Clone ansible playbooks
         uses: actions/checkout@v3
         with:
@@ -76,10 +94,32 @@ jobs:
                 -e enable_dhcp=true -e enable_ssh=true
           mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: vyos-iso
+          path: "./vyos-vm-images/vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
+          retention-days: 1
+
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Setup variables
+        id: vars
+        run: |
+          build_date=$(date +%Y%m%d%H%M)
+          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
+          echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
+
       - uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.vars.outputs.tag-name }}"
-          artifacts: "./vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso, ./vyos-vm-images/vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
+          artifacts: "./vyos-${{ steps.vars.outputs.iso-name }}.iso, ./vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
