@@ -67,12 +67,13 @@ jobs:
 
       - name: Download vyos iso artifact
         uses: actions/download-artifact@v3
-        with:
-          name: vyos-iso
 
       - name: Setup variables
         id: vars
         run: |
+          ls -al
+          ls -al *
+          ls -al */*
           build_date=$(date +%Y%m%d%H%M)
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
@@ -88,7 +89,7 @@ jobs:
         run: |
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=./vyos-${{ steps.vars.outputs.iso-name }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=./vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
                 -e disk_size=2 -e cloud_init=true -e cloud_init_ds=NoCloud,ConfigDrive,None -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
           mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
@@ -106,15 +107,8 @@ jobs:
       contents: write
     steps:
 
-      - name: Download vyos iso artifact
+      - name: Download vyos artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: vyos-iso
-
-      - name: Download vyos qemu artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: vyos-qemu
 
       - name: Setup variables
         id: vars
@@ -126,7 +120,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.vars.outputs.tag-name }}"
-          artifacts: "./vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso"
+          artifacts: "./vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso, ./vyos-qemu/vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
