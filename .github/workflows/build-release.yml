@@ -71,6 +71,9 @@ jobs:
       - name: Download vyos iso artifact
         uses: actions/download-artifact@v3
 
+      - name: Setup Tools
+        run: sudo apt install -y python3 ansible
+
       - name: Setup variables
         id: vars
         run: |
