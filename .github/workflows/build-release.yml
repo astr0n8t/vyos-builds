@@ -38,7 +38,6 @@ jobs:
         id: vars
         run: |
           build_date=$(date +%Y%m%d%H%M)
-          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
       
       - name: Configure
@@ -71,12 +70,9 @@ jobs:
       - name: Setup variables
         id: vars
         run: |
-          ls -al
-          ls -al *
-          ls -al */*
-          build_date=$(date +%Y%m%d%H%M)
-          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
+          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1}' | awk -F'-' '{print $3}')
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
+          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
       - name: Clone ansible playbooks
         uses: actions/checkout@v3
@@ -89,15 +85,15 @@ jobs:
         run: |
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=./vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=../vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
                 -e disk_size=2 -e cloud_init=true -e cloud_init_ds=NoCloud,ConfigDrive,None -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
-          mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
+          mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
 
       - uses: actions/upload-artifact@v3
         with:
           name: vyos-qemu
-          path: "./vyos-vm-images/vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
+          path: "./vyos-vm-images/vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
           retention-days: 1
 
   create-release:
@@ -113,9 +109,9 @@ jobs:
       - name: Setup variables
         id: vars
         run: |
-          build_date=$(date +%Y%m%d%H%M)
-          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
+          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1}' | awk -F'-' '{print $3}')
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
+          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
       - uses: ncipollo/release-action@v1
         with:
