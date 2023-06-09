@@ -71,7 +71,7 @@ jobs:
       - name: Setup variables
         id: vars
         run: |
-          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1}' | awk -F'-' '{print $3}')
+          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1.$2}' | awk -F'-' '{print $4}')
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
@@ -110,7 +110,7 @@ jobs:
       - name: Setup variables
         id: vars
         run: |
-          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1}' | awk -F'-' '{print $3}')
+          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1.$2}' | awk -F'-' '{print $4}')
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
