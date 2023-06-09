@@ -65,6 +65,8 @@ jobs:
       - name: Run ansible playbook to generate qemu image
         working-directory: vyos-vm-images
         run: |
+          sed -i '/download-iso/d' ./qemu.yml
+          sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           ansible-playbook qemu.yml -e "iso_local=../vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
                 -e disk_size=2 -e cloud_init=true -e cloud_init_ds=NoCloud,ConfigDrive,None -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
