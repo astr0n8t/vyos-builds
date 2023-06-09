@@ -39,6 +39,7 @@ jobs:
         run: |
           build_date=$(date +%Y%m%d%H%M)
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
+          echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
       
       - name: Configure
         working-directory: vyos-build
