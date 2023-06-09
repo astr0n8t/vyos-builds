@@ -4,7 +4,7 @@ name: VyOS Rolling + Tailscale
 on:
   workflow_dispatch:
   schedule:
-    - cron: 0 0 * * 0
+    - cron: 0 0 * * 0 
   push:
     branches: [ "main" ]
 
@@ -56,6 +56,12 @@ jobs:
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
               --custom-package "tailscale"
 
+      - name: debug
+        run: |
+          pwd
+          ls -al
+          ls -al */*
+
       - uses: actions/upload-artifact@v3
         with:
           name: vyos-iso
@@ -88,7 +94,7 @@ jobs:
         run: |
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=../vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=./vyos-${{ steps.vars.outputs.iso-name }}.iso" \
                 -e disk_size=2 -e cloud_init=true -e cloud_init_ds=NoCloud,ConfigDrive,None -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
           mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
