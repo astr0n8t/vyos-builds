@@ -63,6 +63,9 @@ jobs:
   build-qemu:
     runs-on: ubuntu-latest
     needs: build-iso
+    container:
+      image: debian:10
+      options: --privileged
     steps:
 
       - name: Download vyos iso artifact
