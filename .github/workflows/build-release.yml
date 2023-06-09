@@ -67,6 +67,8 @@ jobs:
 
       - name: Download vyos iso artifact
         uses: actions/download-artifact@v3
+        with:
+          name: vyos-iso
 
       - name: Setup variables
         id: vars
@@ -104,8 +106,15 @@ jobs:
       contents: write
     steps:
 
-      - name: Download vyos artifacts
+      - name: Download vyos iso artifact
         uses: actions/download-artifact@v3
+        with:
+          name: vyos-iso
+
+      - name: Download vyos qemu artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: vyos-qemu
 
       - name: Setup variables
         id: vars
