@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-iso
     container:
-      image: debian:10
+      image: ubuntu:latest
       options: --privileged
     steps:
 
@@ -72,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Setup Tools
-        run: apt update && apt install -y python3 ansible
+        run: apt update && apt install -y python3 ansible git
 
       - name: Setup variables
         id: vars
