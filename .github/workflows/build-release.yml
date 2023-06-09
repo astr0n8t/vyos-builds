@@ -4,9 +4,8 @@ name: VyOS Rolling + Tailscale
 on:
   workflow_dispatch:
   schedule:
-    - cron: 0 0 * * 0 push:
-    branches: [ "main" ]
-  pull_request:
+    - cron: 0 0 * * 0
+  push:
     branches: [ "main" ]
 
 # Some code borrowed from https://github.com/onedr0p/vyos/blob/main/.github/workflows/rolling.yml
