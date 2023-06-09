@@ -35,7 +35,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Setup Tools
-        run: sudo apt install -y make ansible python
+        run: sudo apt install -y make ansible python3
 
       - name: Run setup actions
         run: make prepare
