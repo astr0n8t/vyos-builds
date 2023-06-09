@@ -3,6 +3,8 @@ name: VyOS Rolling + Tailscale
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * 0
   push:
     branches: [ "main" ]
 
@@ -62,9 +64,10 @@ jobs:
 
   build-qemu:
     runs-on: ubuntu-latest
+    needs: build-iso
     steps:
 
-      - name: Download all workflow run artifacts
+      - name: Download vyos iso artifact
         uses: actions/download-artifact@v3
 
       - name: Setup variables
@@ -92,17 +95,18 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: vyos-iso
+          name: vyos-qemu
           path: "./vyos-vm-images/vyos-qemu-v${{ steps.vars.outputs.tag-name }}.qcow2"
           retention-days: 1
 
   create-release:
     runs-on: ubuntu-latest
+    needs: build-qemu
     permissions:
       contents: write
     steps:
 
-      - name: Download all workflow run artifacts
+      - name: Download vyos artifacts
         uses: actions/download-artifact@v3
 
       - name: Setup variables
