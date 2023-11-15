@@ -17,14 +17,14 @@ env:
 
 jobs:
   build-iso:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: vyos/vyos-build:sagitta
       options: --privileged
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
@@ -82,7 +82,7 @@ jobs:
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
       - name: Clone ansible playbooks
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: vyos-vm-images
           repository: 'vyos/vyos-vm-images'
