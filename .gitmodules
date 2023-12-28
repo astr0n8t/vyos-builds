@@ -1,3 +1,4 @@
 [submodule "vyos-build"]
 	path = vyos-build
 	url = https://github.com/vyos/vyos-build
+  branch = sagitta
