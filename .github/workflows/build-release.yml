@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 # Some code borrowed from https://github.com/onedr0p/vyos/blob/main/.github/workflows/rolling.yml
 env:
@@ -107,6 +109,7 @@ jobs:
           retention-days: 1
 
   create-release:
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     needs: build-qemu
     permissions:
