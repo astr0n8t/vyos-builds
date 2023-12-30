@@ -1,10 +1,4 @@
-# vyos-tailscale
-Custom VyOS 1.4.x build that includes Tailscale
+# VyOS Tailscale + NetBird
+Custom VyOS 1.4.x build that includes Tailscale and NetBird
 
-Building requires a Linux machine, and Docker. The resulting `.iso` will be created in the `build` directory.
-
-## Usage:
-```bash
-git clone --recursive https://github.com/DMarby/vyos-tailscale.git
-make
-```
+Find the latest build in the releases tab.  Built monthly from the sagitta branch.
