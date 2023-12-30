@@ -99,7 +99,7 @@ jobs:
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           ansible-playbook qemu.yml -e "iso_local=../vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e cloud_init_ds=NoCloud -e guest_agent=qemu \
-                -e enable_dhcp=true -e enable_ssh=true
+                -e enable_dhcp=true -e enable_ssh=true -e vyos_version="$VYOS_VERSION"
           mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
 
       - uses: actions/upload-artifact@v4
