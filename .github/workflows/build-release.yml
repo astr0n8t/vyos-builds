@@ -52,10 +52,10 @@ jobs:
               --build-type ${{ env.VYOS_BUILD_TYPE }} \
               --build-comment "VyOS with Tailscale+NetBird" \
               --version ${{ steps.vars.outputs.tag-name }} \
-              --custom-apt-key ../tailscale/tailscale.gpg \
+              --custom-apt-key ../tailscale.gpg \
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
               --custom-package "tailscale" \
-              --custom-apt-key ../netbird/netbird.gpg \
+              --custom-apt-key ../netbird.gpg \
               --custom-apt-entry "https://pkgs.netbird.io/debian stable main" \
               --custom-package "netbird"
 
