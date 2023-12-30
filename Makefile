@@ -7,6 +7,7 @@ build: prepare
 
 prepare:
 	cp tailscale/tailscale.gpg vyos-build/tailscale.gpg
+	cp netbird/netbird.gpg vyos-build/netbird.gpg
 
 	mkdir -p vyos-build/data/live-build-config/includes.chroot/etc/default
 	cp tailscale/tailscaled vyos-build/data/live-build-config/includes.chroot/etc/default/tailscaled

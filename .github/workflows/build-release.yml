@@ -50,11 +50,14 @@ jobs:
               --architecture ${{ env.VYOS_ARCH }} \
               --build-by ${{ env.VYOS_BUILD_BY }} \
               --build-type ${{ env.VYOS_BUILD_TYPE }} \
-              --build-comment "VyOS with Tailscale" \
+              --build-comment "VyOS with Tailscale+NetBird" \
               --version ${{ steps.vars.outputs.tag-name }} \
               --custom-apt-key ../tailscale.gpg \
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
-              --custom-package "tailscale"
+              --custom-package "tailscale" \
+              --custom-apt-key ../netbird.gpg \
+              --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
+              --custom-package "netbird"
 
       - uses: actions/upload-artifact@v4
         with:
