@@ -179,7 +179,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.vars.outputs.tag-name }}"
-          artifacts: "./vyos-iso/*.iso, ./vyos-qemu/*.qcow2"
+          artifacts: "./vyos-iso-*/*.iso, ./vyos-qemu-*/*.qcow2"
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
