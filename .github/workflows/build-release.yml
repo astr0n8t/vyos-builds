@@ -128,27 +128,7 @@ jobs:
           name: vyos-iso-${{ matrix.flavor }}
 
       - name: Setup Tools
-        run: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-                ansible \
-                python3 \
-                gdisk \
-                kpartx \
-                dosfstools \
-                e2fsprogs \
-                gnupg \
-                qemu-utils \
-                python3-lxml \
-                grub-efi-amd64 \
-                grub-efi-amd64-bin \
-                grub-common \
-                isolinux \
-                python3-requests \
-                rsync \
-                unzip \
-                zlib1g-dev \
-                squashfs-tools \
-                xorriso \
-                build-essential
+        run: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y ansible python3 gdisk kpartx dosfstools e2fsprogs gnupg qemu-utils python3-lxml grub-efi-amd64 grub-efi-amd64-bin grub-common isolinux python3-requests rsync unzip zlib1g-dev squashfs-tools xorriso build-essential
 
       - name: Clone ansible playbooks
         uses: actions/checkout@v4
