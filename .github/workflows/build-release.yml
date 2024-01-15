@@ -58,11 +58,12 @@ jobs:
               --custom-apt-key ../netbird.gpg \
               --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
               --custom-package "netbird"
+           mv ./build/vyos*.iso ./build/vyos-1.4.iso
 
       - uses: actions/upload-artifact@v4
         with:
           name: vyos-iso
-          path: "./vyos-build/build/vyos-${{ steps.vars.outputs.iso-name }}.iso"
+          path: "./vyos-build/build/vyos-1.4.iso"
           retention-days: 1
 
   build-qemu:
@@ -98,14 +99,14 @@ jobs:
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           ansible-playbook qemu.yml -e "iso_local=../vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
-                -e disk_size=16 -e cloud_init=true -e cloud_init_ds=NoCloud -e guest_agent=qemu \
+                -e disk_size=16 -e cloud_init=true -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
-          mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
+          mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-1.4.qcow2"
 
       - uses: actions/upload-artifact@v4
         with:
           name: vyos-qemu
-          path: "./vyos-vm-images/vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
+          path: "./vyos-vm-images/vyos-qemu-1.4.qcow2"
           retention-days: 1
 
   create-release:
@@ -123,13 +124,12 @@ jobs:
         id: vars
         run: |
           build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1.$2}' | awk -F'-' '{print $4}')
-          echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
       - uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.vars.outputs.tag-name }}"
-          artifacts: "./vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso, ./vyos-qemu/vyos-qemu-${{ steps.vars.outputs.iso-name }}.qcow2"
+          artifacts: "./vyos-iso/vyos-1.4.iso, ./vyos-qemu/vyos-qemu-1.4.qcow2"
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
