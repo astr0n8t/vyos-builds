@@ -23,8 +23,10 @@ jobs:
     container:
       image: vyos/vyos-build:sagitta
       options: --privileged
+    strategy:
+      matrix:
+        flavor: [sagitta, tailscale, netbird, tailscale-netbird]
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -43,7 +45,50 @@ jobs:
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
       
-      - name: Configure
+      - name: Configure Plain
+        if: ${{ matrix.flavor }} == 'sagitta'
+        working-directory: vyos-build
+        run: |
+          ./build-vyos-image iso \
+              --architecture ${{ env.VYOS_ARCH }} \
+              --build-by ${{ env.VYOS_BUILD_BY }} \
+              --build-type ${{ env.VYOS_BUILD_TYPE }} \
+              --build-comment "VyOS with Tailscale+NetBird" \
+              --version ${{ steps.vars.outputs.tag-name }}
+           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+
+      - name: Configure Tailscale
+        if: ${{ matrix.flavor }} == 'tailscale'
+        working-directory: vyos-build
+        run: |
+          ./build-vyos-image iso \
+              --architecture ${{ env.VYOS_ARCH }} \
+              --build-by ${{ env.VYOS_BUILD_BY }} \
+              --build-type ${{ env.VYOS_BUILD_TYPE }} \
+              --build-comment "VyOS with Tailscale" \
+              --version ${{ steps.vars.outputs.tag-name }} \
+              --custom-apt-key ../tailscale.gpg \
+              --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
+              --custom-package "tailscale" \
+           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           
+      - name: Configure Netbird
+        if: ${{ matrix.flavor }} == 'netbird'
+        working-directory: vyos-build
+        run: |
+          ./build-vyos-image iso \
+              --architecture ${{ env.VYOS_ARCH }} \
+              --build-by ${{ env.VYOS_BUILD_BY }} \
+              --build-type ${{ env.VYOS_BUILD_TYPE }} \
+              --build-comment "VyOS with NetBird" \
+              --version ${{ steps.vars.outputs.tag-name }} \
+              --custom-apt-key ../netbird.gpg \
+              --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
+              --custom-package "netbird"
+           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           
+      - name: Configure Tailscale+Netbird
+        if: ${{ matrix.flavor }} == 'tailscale-netbird'
         working-directory: vyos-build
         run: |
           ./build-vyos-image iso \
@@ -58,12 +103,12 @@ jobs:
               --custom-apt-key ../netbird.gpg \
               --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
               --custom-package "netbird"
-           mv ./build/vyos*.iso ./build/vyos-1.4.iso
+           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
 
       - uses: actions/upload-artifact@v4
         with:
-          name: vyos-iso
-          path: "./vyos-build/build/vyos-1.4.iso"
+          name: vyos-iso-${{ matrix.flavor }}
+          path: "./vyos-build/build/vyos-1.4-${{ matrix.flavor }}.iso"
           retention-days: 1
 
   build-qemu:
@@ -72,10 +117,15 @@ jobs:
     container:
       image: ubuntu:latest
       options: --privileged
+    strategy:
+      matrix:
+        flavor: [sagitta, tailscale, netbird, tailscale-netbird]
     steps:
 
       - name: Download vyos iso artifact
         uses: actions/download-artifact@v4
+        with:
+          name: vyos-iso-${{ matrix.flavor }}
 
       - name: Setup Tools
         run: apt update && DEBIAN_FRONTEND=noninteractive apt install -y python3 ansible git
@@ -98,15 +148,15 @@ jobs:
         run: |
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=../vyos-iso/vyos-${{ steps.vars.outputs.iso-name }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=../vyos-iso/vyos-1.4-${{ matrix.flavor }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
-          mv /tmp/vyos-*-qemu.qcow2 "./vyos-qemu-1.4.qcow2"
+          mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: vyos-qemu
-          path: "./vyos-vm-images/vyos-qemu-1.4.qcow2"
+          name: vyos-qemu-${{ matrix.flavor }}
+          path: "./vyos-vm-images/vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
           retention-days: 1
 
   create-release:
@@ -129,7 +179,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.vars.outputs.tag-name }}"
-          artifacts: "./vyos-iso/vyos-1.4.iso, ./vyos-qemu/vyos-qemu-1.4.qcow2"
+          artifacts: "./vyos-iso/*.iso, ./vyos-qemu/*.qcow2"
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
