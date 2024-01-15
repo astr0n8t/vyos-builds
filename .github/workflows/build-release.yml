@@ -173,7 +173,7 @@ jobs:
       - name: Setup variables
         id: vars
         run: |
-          build_date=$(ls -1 vyos-iso | awk -F'.' '{print $1.$2}' | awk -F'-' '{print $4}')
+          build_date=$(date +%Y%m%d%H%M)
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
 
       - uses: ncipollo/release-action@v1
