@@ -1,4 +1,14 @@
-# VyOS Tailscale + NetBird
-Custom VyOS 1.4.x build that includes Tailscale and NetBird
+# VyOS Builds
+Custom VyOS 1.4.x builds built with Github Actions (re-built monthly).
 
-Find the latest build in the releases tab.  Built monthly from the sagitta branch.
+Built with support for cloud-init via the qcow2 images.
+
+## Flavors:
+  - Sagitta
+    - Just VyOS
+  - Tailscale
+    - VyOS 1.4 w/ tailscale
+  - Netbird
+    - VyOS 1.4 w/ netbird
+  - Tailscale+Netbird
+    - VyOS 1.4 w/ tailscale & netbird  
