@@ -69,7 +69,7 @@ jobs:
               --version ${{ steps.vars.outputs.tag-name }} \
               --custom-apt-key ../tailscale.gpg \
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
-              --custom-package "tailscale" \
+              --custom-package "tailscale" 
            mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
            
       - name: Configure Netbird
