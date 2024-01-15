@@ -148,9 +148,7 @@ jobs:
         run: |
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
-          ls -al ../
-          ls -al ../vyos-iso-${{ matrix.flavor }}
-          ansible-playbook qemu.yml -e "iso_local=../vyos-iso-${{ matrix.flavor }}/vyos-1.4-${{ matrix.flavor }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=../vyos-1.4-${{ matrix.flavor }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e guest_agent=qemu \
                 -e enable_dhcp=true -e enable_ssh=true
           mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
