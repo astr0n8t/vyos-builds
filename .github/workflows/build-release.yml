@@ -150,7 +150,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: vyos-qemu-${{ matrix.flavor }}
+          name: vyos-qemu-${{ matrix.flavor }}-${{ matrix.cloud }}
           path: "./vyos-vm-images/vyos-qemu-1.4-${{ matrix.flavor }}-${{ matrix.cloud }}.qcow2"
           retention-days: 1
 
