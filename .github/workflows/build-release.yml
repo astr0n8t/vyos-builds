@@ -135,6 +135,7 @@ jobs:
         with:
           path: vyos-vm-images
           repository: 'vyos/vyos-vm-images'
+          ref: '9976d4456352d051002ffa03148262182f7fee90'
 
       - name: Run ansible playbook to generate qemu image
         working-directory: vyos-vm-images
@@ -143,7 +144,7 @@ jobs:
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           ansible-playbook qemu.yml -e "iso_local=../vyos-1.4-${{ matrix.flavor }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e guest_agent=qemu \
-                -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=NoCloud,ConfigDrive
+                -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=NoCloud,ConfigDrive,None
           mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
 
       - uses: actions/upload-artifact@v4
