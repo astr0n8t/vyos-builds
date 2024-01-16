@@ -120,7 +120,6 @@ jobs:
     strategy:
       matrix:
         flavor: [sagitta, tailscale, netbird, tailscale-netbird]
-        cloud: [NoCloud, ConfigDrive]
     steps:
 
       - name: Download vyos iso artifact
@@ -144,14 +143,14 @@ jobs:
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           ansible-playbook qemu.yml -e "iso_local=../vyos-1.4-${{ matrix.flavor }}.iso" \
-                -e disk_size=16 -e cloud_init=true -e guest_agent=qemu \
-                -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=${{ matrix.cloud }}
-          mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}-${{ matrix.cloud }}.qcow2"
+                -e disk_size=16 -e cloud_init=true -e guest_agent=qemu -e keep_user=true \
+                -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=NoCloud,ConfigDrive,None
+          mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: vyos-qemu-${{ matrix.flavor }}-${{ matrix.cloud }}
-          path: "./vyos-vm-images/vyos-qemu-1.4-${{ matrix.flavor }}-${{ matrix.cloud }}.qcow2"
+          name: vyos-qemu-${{ matrix.flavor }}
+          path: "./vyos-vm-images/vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
           retention-days: 1
 
   create-release:
