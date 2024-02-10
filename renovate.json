@@ -9,7 +9,7 @@
   },
   "docker": {
     "enabled": false
-  }
+  },
   "schedule": [
     "every month"
   ]
