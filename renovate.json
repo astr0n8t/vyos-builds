@@ -7,10 +7,12 @@
   "git-submodules": {
     "enabled": true
   },
-  {
-    "matchPackageNames": ["debian"],
-    "enabled": false
-  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["debian"],
+      "enabled": false
+    },
+  ],
   "schedule": [
     "every month"
   ]
