@@ -7,6 +7,9 @@
   "git-submodules": {
     "enabled": true
   },
+  "docker": {
+    "enabled": false
+  }
   "schedule": [
     "every month"
   ]
