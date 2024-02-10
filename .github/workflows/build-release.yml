@@ -16,6 +16,7 @@ env:
   VYOS_BUILD_BY: github-actions@github.com
   VYOS_BUILD_TYPE: release
   VYOS_VERSION: 1.4-sagitta
+  VYOS_DOCKER_IMAGE: "debian:11.8"
 
 jobs:
   build-iso:
@@ -115,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-iso
     container:
-      image: debian:11.8
+      image: ${{ env.VYOS_DOCKER_IMAGE }}
       options: --privileged
     strategy:
       matrix:
