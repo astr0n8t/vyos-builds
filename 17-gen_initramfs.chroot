@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo I: Create initramfs if it does not exist.
+
+# Kernel complains about non available nls_ascii module when booting from USB pendrive
+echo "nls_ascii" >> /etc/initramfs-tools/modules
+
+if [ -e /boot/initrd.img-* ]; then
+	rm -f /boot/initrd.img-*
+fi
+
+KERNEL_COUNT=$(find /boot/ -type f -name vmlinuz* | wc -l)
+if [ "$KERNEL_COUNT" -gt 1 ]; then
+    echo "E: there is more than one kernel image file installed!"
+    echo "E: please make sure that kernel_version in data/defaults.toml is up to date"
+    echo "E: if your repository is up to date, then there is a bug"
+fi
+
+kernel=`ls /boot | grep vmlinuz- | head -n 1 | sed 's/vmlinuz-//g'`
+
+echo "I: Executing update-initramfs -c -k $kernel"
+
+update-initramfs -c -k $kernel
