@@ -33,7 +33,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Fix bad initramfs bashfu
-        run: cp 17-gen_initramfs.chroot vyos-build/data/live-build-config/hooks/live/17-gen_initramfs.chroot
+        run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
 
       - name: Setup Tools
         run: sudo apt install -y make

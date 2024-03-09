@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo I: Creating kernel symlinks.
+cd /boot
+kernel=`ls -1 /boot | grep vmlinuz- | head -n 1 | sed 's/vmlinuz-//g'`
+ln -s initrd.img-$kernel initrd.img
+ln -s vmlinuz-$kernel vmlinuz
