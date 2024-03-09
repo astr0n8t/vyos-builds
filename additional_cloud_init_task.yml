@@ -1,0 +1,4 @@
+
+- name: Fix number of vyos file
+  become: true
+  command: {{ vyos_install_root }}/etc/cloud/cloud.cfg.d/10_vyos.cfg {{ vyos_install_root }}/etc/cloud/cloud.cfg.d/99_vyos.cfg
