@@ -14,9 +14,10 @@ if [ "$KERNEL_COUNT" -gt 1 ]; then
     echo "E: there is more than one kernel image file installed!"
     echo "E: please make sure that kernel_version in data/defaults.toml is up to date"
     echo "E: if your repository is up to date, then there is a bug"
+    echo `ls /boot | grep vmlinuz-`
 fi
 
-kernel=`ls /boot | grep vmlinuz- | head -n 1 | sed 's/vmlinuz-//g'`
+kernel=`ls /boot | grep vmlinuz- | head -n 2 | sed 's/vmlinuz-//g'`
 
 echo "I: Executing update-initramfs -c -k $kernel"
 
