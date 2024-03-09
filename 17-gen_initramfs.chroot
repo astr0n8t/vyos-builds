@@ -17,7 +17,7 @@ if [ "$KERNEL_COUNT" -gt 1 ]; then
     echo `ls /boot | grep vmlinuz-`
 fi
 
-kernel=`ls /boot | grep vmlinuz- | head -n 2 | sed 's/vmlinuz-//g'`
+kernel=`ls -1 /boot | grep vmlinuz- | head -n 1 | sed 's/vmlinuz-//g'`
 
 echo "I: Executing update-initramfs -c -k $kernel"
 
