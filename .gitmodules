@@ -1,4 +1,4 @@
 [submodule "vyos-build"]
 	path = vyos-build
 	url = https://github.com/vyos/vyos-build
-	branch = 1.4.0-epa1
+	branch = 1.4.0-epa2
