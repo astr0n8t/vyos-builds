@@ -35,7 +35,7 @@ jobs:
       - name: Git Sumbodule Update
         run: |
           git config --global --add safe.directory /__w/vyos-builds/vyos-builds
-          git submodule foreach 'git switch -c 1.4.0-epa2'
+          git submodule foreach 'git switch -c sagitta'
 
       - name: Fix bad initramfs bashfu
         run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
