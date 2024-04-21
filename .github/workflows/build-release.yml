@@ -35,7 +35,7 @@ jobs:
       - name: Git Sumbodule Update
         run: |
           git config --global --add safe.directory /__w/vyos-builds/vyos-builds
-          git submodule foreach 'git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" && git fetch origin'
+          git submodule foreach 'git switch -c 1.4.0-epa2'
 
       - name: Fix bad initramfs bashfu
         run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
