@@ -36,7 +36,7 @@ jobs:
         run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
 
       - name: Setup Tools
-        run: sudo apt install -y make sudo make live-build pbuilder devscripts python3-pystache python3-git qemu-util
+        run: sudo apt install -y make
 
       - name: Run setup actions
         run: make prepare
