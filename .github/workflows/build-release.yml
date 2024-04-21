@@ -34,6 +34,7 @@ jobs:
 
       - name: Git Sumbodule Update
         run: |
+          git config --global --add safe.directory /__w/vyos-builds/vyos-builds
           git submodule foreach 'git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" && git fetch origin'
 
       - name: Fix bad initramfs bashfu
