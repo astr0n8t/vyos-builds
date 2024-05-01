@@ -153,7 +153,7 @@ jobs:
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           cat ../additional_cloud_init_task.yml >> ./roles/install-cloud-init/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=../vyos-1.4-${{ matrix.flavor }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=../vyos-1.5-${{ matrix.flavor }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e guest_agent=qemu -e keep_user=true \
                 -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=NoCloud,ConfigDrive,None
           mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.5-${{ matrix.flavor }}.qcow2"
@@ -188,4 +188,4 @@ jobs:
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
-            https://docs.vyos.io/en/latest/changelog/1.4.html
+            https://docs.vyos.io/en/latest/changelog/1.5.html
