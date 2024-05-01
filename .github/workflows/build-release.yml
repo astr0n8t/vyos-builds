@@ -11,21 +11,21 @@ on:
 # Some code borrowed from https://github.com/onedr0p/vyos/blob/main/.github/workflows/rolling.yml
 env:
   VYOS_URL: https://github.com/vyos/vyos-build
-  VYOS_BRANCH: sagitta
+  VYOS_BRANCH: current
   VYOS_ARCH: amd64
   VYOS_BUILD_BY: github-actions@github.com
   VYOS_BUILD_TYPE: release
-  VYOS_VERSION: 1.4-sagitta
+  VYOS_VERSION: 1.5-rolling
 
 jobs:
   build-iso:
     runs-on: ubuntu-22.04
     container:
-      image: vyos/vyos-build:sagitta
+      image: vyos/vyos-build:current
       options: --privileged
     strategy:
       matrix:
-        flavor: [sagitta, tailscale, netbird, tailscale-netbird]
+        flavor: [vanilla, tailscale, netbird, tailscale-netbird]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
       - name: Git Sumbodule Update
         run: |
           git config --global --add safe.directory /__w/vyos-builds/vyos-builds
-          git submodule foreach 'git switch -c sagitta'
+          git submodule foreach 'git checkout current'
 
       - name: Fix bad initramfs bashfu
         run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
@@ -53,8 +53,8 @@ jobs:
           echo "iso-name=${{ env.VYOS_VERSION }}-${build_date}-${{ env.VYOS_ARCH }}" >> "$GITHUB_OUTPUT"
           echo "tag-name=${{ env.VYOS_VERSION }}-${build_date}" >> "$GITHUB_OUTPUT"
       
-      - name: Configure Sagitta
-        if: ${{ matrix.flavor == 'sagitta' }}
+      - name: Configure Vanilla
+        if: ${{ matrix.flavor == 'vanilla' }}
         working-directory: vyos-build
         run: |
           ./build-vyos-image iso \
@@ -63,7 +63,7 @@ jobs:
               --build-type ${{ env.VYOS_BUILD_TYPE }} \
               --build-comment "VyOS with Tailscale+NetBird" \
               --version ${{ steps.vars.outputs.tag-name }}
-           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           mv ./build/vyos*.iso ./build/vyos-1.5-${{ matrix.flavor }}.iso
 
       - name: Configure Tailscale
         if: ${{ matrix.flavor == 'tailscale' }}
@@ -78,7 +78,7 @@ jobs:
               --custom-apt-key ../tailscale.gpg \
               --custom-apt-entry "deb https://pkgs.tailscale.com/stable/debian bullseye main" \
               --custom-package "tailscale" 
-           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           mv ./build/vyos*.iso ./build/vyos-1.5-${{ matrix.flavor }}.iso
            
       - name: Configure Netbird
         if: ${{ matrix.flavor == 'netbird' }}
@@ -93,7 +93,7 @@ jobs:
               --custom-apt-key ../netbird.gpg \
               --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
               --custom-package "netbird"
-           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           mv ./build/vyos*.iso ./build/vyos-1.5-${{ matrix.flavor }}.iso
            
       - name: Configure Tailscale+Netbird
         if: ${{ matrix.flavor == 'tailscale-netbird' }}
@@ -111,12 +111,12 @@ jobs:
               --custom-apt-key ../netbird.gpg \
               --custom-apt-entry "deb https://pkgs.netbird.io/debian stable main" \
               --custom-package "netbird"
-           mv ./build/vyos*.iso ./build/vyos-1.4-${{ matrix.flavor }}.iso
+           mv ./build/vyos*.iso ./build/vyos-1.5-${{ matrix.flavor }}.iso
 
       - uses: actions/upload-artifact@v4
         with:
           name: vyos-iso-${{ matrix.flavor }}
-          path: "./vyos-build/build/vyos-1.4-${{ matrix.flavor }}.iso"
+          path: "./vyos-build/build/vyos-1.5-${{ matrix.flavor }}.iso"
           retention-days: 1
 
   build-qemu:
@@ -127,7 +127,7 @@ jobs:
       options: --privileged
     strategy:
       matrix:
-        flavor: [sagitta, tailscale, netbird, tailscale-netbird]
+        flavor: [vanilla, tailscale, netbird, tailscale-netbird]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -153,15 +153,15 @@ jobs:
           sed -i '/download-iso/d' ./qemu.yml
           sed -i -e '18,19d' ./roles/install-grub/tasks/main.yml
           cat ../additional_cloud_init_task.yml >> ./roles/install-cloud-init/tasks/main.yml
-          ansible-playbook qemu.yml -e "iso_local=../vyos-1.4-${{ matrix.flavor }}.iso" \
+          ansible-playbook qemu.yml -e "iso_local=../vyos-1.5-${{ matrix.flavor }}.iso" \
                 -e disk_size=16 -e cloud_init=true -e guest_agent=qemu -e keep_user=true \
                 -e enable_dhcp=true -e enable_ssh=true -e cloud_init_ds=NoCloud,ConfigDrive,None
-          mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
+          mv /tmp/vyos-*.qcow2 "./vyos-qemu-1.5-${{ matrix.flavor }}.qcow2"
 
       - uses: actions/upload-artifact@v4
         with:
           name: vyos-qemu-${{ matrix.flavor }}
-          path: "./vyos-vm-images/vyos-qemu-1.4-${{ matrix.flavor }}.qcow2"
+          path: "./vyos-vm-images/vyos-qemu-1.5-${{ matrix.flavor }}.qcow2"
           retention-days: 1
 
   create-release:
@@ -188,4 +188,4 @@ jobs:
           artifactErrorsFailBuild: true
           body: |
             Official VyOS Changelog:
-            https://docs.vyos.io/en/latest/changelog/1.4.html
+            https://docs.vyos.io/en/latest/changelog/1.5.html
