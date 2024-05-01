@@ -15,7 +15,7 @@ env:
   VYOS_ARCH: amd64
   VYOS_BUILD_BY: github-actions@github.com
   VYOS_BUILD_TYPE: release
-  VYOS_VERSION: 1.4-rolling
+  VYOS_VERSION: 1.5-rolling
 
 jobs:
   build-iso:
@@ -35,7 +35,7 @@ jobs:
       - name: Git Sumbodule Update
         run: |
           git config --global --add safe.directory /__w/vyos-builds/vyos-builds
-          git submodule foreach 'git switch -c current'
+          git submodule foreach 'git checkout current'
 
       - name: Fix bad initramfs bashfu
         run: cp *.chroot vyos-build/data/live-build-config/hooks/live/
