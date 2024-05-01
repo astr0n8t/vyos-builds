@@ -5,8 +5,12 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+    paths-ignore:
+    - '**/README.md'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - '**/README.md'
 
 # Some code borrowed from https://github.com/onedr0p/vyos/blob/main/.github/workflows/rolling.yml
 env:
