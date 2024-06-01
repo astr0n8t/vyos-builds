@@ -61,7 +61,7 @@ jobs:
         if: ${{ matrix.flavor == 'vanilla' }}
         working-directory: vyos-build
         run: |
-          ./build-vyos-image iso \
+          ./build-vyos-image generic \
               --architecture ${{ env.VYOS_ARCH }} \
               --build-by ${{ env.VYOS_BUILD_BY }} \
               --build-type ${{ env.VYOS_BUILD_TYPE }} \
