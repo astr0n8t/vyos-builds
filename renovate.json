@@ -11,7 +11,7 @@
     {
       "matchPackageNames": ["debian"],
       "enabled": false
-    },
+    }
   ],
   "schedule": [
     "every month"
