@@ -32,7 +32,7 @@ jobs:
         flavor: [vanilla, tailscale, netbird, tailscale-netbird]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: 'recursive'
 
@@ -134,10 +134,10 @@ jobs:
         flavor: [vanilla, tailscale, netbird, tailscale-netbird]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download vyos iso artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: vyos-iso-${{ matrix.flavor }}
 
@@ -145,7 +145,7 @@ jobs:
         run: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y ansible python3 gdisk kpartx dosfstools e2fsprogs gnupg qemu-utils python3-lxml grub-efi-amd64 grub-efi-amd64-bin grub-common isolinux python3-requests rsync unzip zlib1g-dev squashfs-tools xorriso build-essential
 
       - name: Clone ansible playbooks
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: vyos-vm-images
           repository: 'vyos/vyos-vm-images'
@@ -177,7 +177,7 @@ jobs:
     steps:
 
       - name: Download vyos artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Setup variables
         id: vars
